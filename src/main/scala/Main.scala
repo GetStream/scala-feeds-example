@@ -22,7 +22,7 @@ object Main {
 
     val chris = client.flatFeed("user", "chris")
     val jack = client.flatFeed("timeline", "jack")
-    val activity = Activity.builder
+    var activity = Activity.builder
       .actor("chris")
       .verb("add")
       .`object`("picture:404")
@@ -65,13 +65,13 @@ object Main {
         "course" -> Map(
           "name" -> "Golden Gate park",
           "distance" -> 10
-        ),
-        "participants" -> List("Thierry", "Tommaso"),
-        "started_at" -> LocalDateTime.now,
+        ).asJava,
+        "participants" -> List("Thierry", "Tommaso").asJava,
+        "started_at" -> new Date,
         "location" -> Map(
           "type" -> "point",
-          "coordinates" -> List(37.769722, -122.476944)
-        )
+          "coordinates" -> List(37.769722, -122.476944).asJava
+        ).asJava
       ).asJava).build
     userFeed.addActivity(activity).join
 
@@ -106,7 +106,7 @@ object Main {
       "shares" -> Map(
         "facebook" -> "...",
         "twitter" -> "..."
-      )
+      ).asJava
     )
     // prepare the unset operations
     val unset = List("daily_likes", "popularity")
@@ -230,7 +230,7 @@ object Main {
       .verb("foul")
       .`object`("Player:Ramos")
       .to(List(new FeedID("team:barcelona"), new FeedID("match:1")).asJava)
-      .extraField("match", Map("El Classico" -> 10)).build
+      .extraField("match", Map("El Classico" -> 10).asJava).build
     // playerFeed.addActivity(activity);
     userFeed.addActivity(activity)
 
@@ -386,7 +386,7 @@ object Main {
       new CollectionData("124")
         .set("name", "Jane")
         .set("favorite_color", "purple")
-        .set("interests", List("fashion", "jazz")))
+        .set("interests", List("fashion", "jazz").asJava))
 
 
     // select the entries with ID 123 and 124 from items collection
@@ -402,7 +402,7 @@ object Main {
     val cheeseBurger = client.collections.add("food",
       new CollectionData("123")
         .set("name", "Cheese Burger")
-        .set("ingredients", List("cheese", "burger", "bread", "lettuce", "tomato"))).join
+        .set("ingredients", List("cheese", "burger", "bread", "lettuce", "tomato").asJava)).join
 
     // the object returned by .add can be embedded directly inside of an activity
     userFeed.addActivity(Activity.builder
@@ -415,7 +415,10 @@ object Main {
     userFeed.getEnrichedActivities.join
 
     // we can then update the object and Stream will propagate the change to all activities
-    client.collections.update(cheeseBurger.getCollection, cheeseBurger.set("name", "Amazing Cheese Burger").set("ingredients", List("cheese", "burger", "bread", "lettuce", "tomato"))).join
+    client.collections.update(cheeseBurger.getCollection, cheeseBurger
+      .set("name", "Amazing Cheese Burger")
+      .set("ingredients", List("cheese", "burger", "bread", "lettuce", "tomato").asJava)
+    ).join
 
 
 
@@ -488,7 +491,7 @@ object Main {
       .feedID("user:thierry")
       .content(new Content("message:34349698")
         .set("verb", "share")
-        .set("actor", Map("1" -> "user1")))
+        .set("actor", Map("1" -> "user1").asJava))
       .boost(2)
       .location("profile_page")
       .position(3)
@@ -499,7 +502,7 @@ object Main {
       .contentList(
         new Content("tweet:34349698")
           .set("verb", "share")
-          .set("actor", Map("1" -> "user1")),
+          .set("actor", Map("1" -> "user1").asJava),
         new Content("tweet:34349699"),
         new Content("tweet:34349700"))
       .feedID("flat:tommaso")
